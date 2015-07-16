@@ -40,6 +40,17 @@ get_base_dn () {
     BASE_DN=${BASE_DN%,}
 }
 
+set_ldapscripts () {
+    get_base_dn
+    sed -i "s/{{ BASE_DN }}/${BASE_DN}/g" /build/assets/conf/ldapscripts.conf
+
+    [ -f /etc/ldapscripts/ldapscripts.conf ] \
+        && mv /etc/ldapscripts/ldapscripts.conf /etc/ldapscripts/ldapscripts.conf.ori
+    ln -s /build/assets/conf/ldapscripts.conf /etc/ldapscripts/ldapscripts.conf
+    echo -n ${LDAP_ADMIN_PASSWORD} > /etc/ldapscripts/ldapscripts.passwd
+    chmod 400 /etc/ldapscripts/ldapscripts.passwd
+}
+
 # fix file permission
 chown -R openldap:openldap /var/lib/ldap
 chown -R openldap:openldap /etc/ldap
@@ -76,8 +87,15 @@ elif [ ! -z "$(ls -A /var/lib/ldap)" ] && [ -z "$(ls -A /etc/ldap/slapd.d)" ]; t
     echo "Error: /etc/ldap/slapd.d is empty"
     exit 1
 else
-    # TODO: bootstrapped with TLS
+
     echo "Warning: using existing database and config directory"
+
+    # setup ldapscripts for convenience
+    set_ldapscripts
+
+    # OpenLDAP client config
+    echo "TLS_REQCERT never" >> /etc/ldap/ldap.conf
+
 fi
 
 if [ ${BOOTSTRAP} -eq 0 ]; then
@@ -94,11 +112,11 @@ if [ ${BOOTSTRAP} -eq 0 ]; then
     sed -i "s/{{ HOSTNAME }}/${HOSTNAME}/g" /build/assets/tls/ldap.info
     gen_tls_files \
         /build/assets/tls/ca.info \
-        /build/assets/tls/cakey.pem \
-        /build/assets/tls/cacert.pem \
+        /build/assets/private/cakey.pem \
+        /build/assets/certs/cacert.pem \
         /build/assets/tls/ldap.info \
-        /build/assets/tls/ldapkey.pem \
-        /build/assets/tls/ldapcert.pem
+        /build/assets/private/ldapkey.pem \
+        /build/assets/certs/ldapcert.pem
 
     ldapmodify -Y EXTERNAL -H "ldapi:///" -f /build/assets/ldif/tls.ldif
     chown -R openldap:openldap /build
@@ -106,16 +124,8 @@ if [ ${BOOTSTRAP} -eq 0 ]; then
     # OpenLDAP client config
     echo "TLS_REQCERT never" >> /etc/ldap/ldap.conf
 
-
     # Construct basic directory
-    get_base_dn
-    sed -i "s/{{ BASE_DN }}/${BASE_DN}/g" /build/assets/conf/ldapscripts.conf
-
-    [ -f /etc/ldapscripts/ldapscripts.conf ] \
-        && mv /etc/ldapscripts/ldapscripts.conf /etc/ldapscripts/ldapscripts.conf.ori
-    ln -s /build/assets/conf/ldapscripts.conf /etc/ldapscripts/ldapscripts.conf
-    echo -n ${LDAP_ADMIN_PASSWORD} > /etc/ldapscripts/ldapscripts.passwd
-    chmod 400 /etc/ldapscripts/ldapscripts.passwd
+    set_ldapscripts
     ldapinit -s
 
     # stop OpenLDAP

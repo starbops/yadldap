@@ -1,12 +1,12 @@
 #!/bin/sh -e
 
-if [ -f /build/kickstart.sh ]; then
+if [ -f /build/scripts/kickstart.sh ]; then
     echo "link kickstart.sh to /etc/my_init.d/kickstart"
-    ln -s /build/kickstart.sh /etc/my_init.d/kickstart
+    ln -s /build/scripts/kickstart.sh /etc/my_init.d/kickstart
 fi
 
-if [ -f /build/slapd.sh ]; then
+if [ -f /build/scripts/slapd.sh ]; then
     echo "link slapd to /etc/service/slapd/run"
     mkdir -p /etc/service/slapd
-    ln -s /build/slapd.sh /etc/service/slapd/run
+    ln -s /build/scripts/slapd.sh /etc/service/slapd/run
 fi
