@@ -50,13 +50,41 @@ Also we support three kinds of environment variables now.
 The following is an example:
 
 ```
-$ docker run -d -h <hostname> --name ldap -e LDAP_ADMIN_PASSWORD=<password> -e LDAP_DOMAIN=<domain> -e LDAP_ORGANIZATION=<organization> <image>:<version> /sbin/my_init
+$ docker run -d -h <hostname> --name ldap \
+    -e LDAP_ADMIN_PASSWORD=<password> \
+    -e LDAP_DOMAIN=<domain> \
+    -e LDAP_ORGANIZATION=<organization> \
+    <image>:<version> /sbin/my_init
 ```
 
 To query the OpenLDAP server, please use `ldapsearch`:
 
 ```
 $ ldapsearch -x -H ldaps://<contain_ip> -b "dc=example,dc=com" -D "cn=admin,dc=example,dc=com" -w <password>
+```
+
+## Persistent Database
+
+Although the information in the directory will remain while restarting of the
+container, it will be lost one the container is deleted. To maintain the
+database and config directory persistently, one should use Docker volume. There
+are 4 location that store different information:
+
+1. `/var/lib/ldap`: database
+2. `/etc/ldap/slapd.d`: config
+3. `/build/assets/private`: private keys
+4. `/build/assets/certs`: certificates
+
+```
+$ docker run -d -h <hostname> --name ldap \
+    -e LDAP_ADMIN_PASSWORD=<passwd> \
+    -e LDAP_DOMAIN=<domain> \
+    -e LDAP_ORGANIZATION=<organization> \
+    -v /docker/ldap/database:/var/lib/ldap \
+    -v /docker/ldap/config:/etc/ldap/slapd.d \
+    -v /docker/ldap/private:/build/assets/private \
+    -v /docker/ldap/certs:/build/assets/certs \
+    starbops/yadldap:0.1 /sbin/my_init
 ```
 
 ## Caveat
