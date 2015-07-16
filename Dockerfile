@@ -22,9 +22,9 @@ RUN apt-get -y update && LC_ALL=C DEBIAN_FRONTEND=noninteractive apt-get install
         && rm -rf /var/lib/ldap /etc/ldap/slapd.d
 
 # Default environment variables.
-ENV LDAP_ADMIN_PASSWORD admin
-ENV LDAP_DOMAIN example.com
-ENV LDAP_ORGANIZATION Example
+ENV LDAP_ADMIN_PASSWORD=admin \
+    LDAP_DOMAIN=example.com \
+    LDAP_ORGANIZATION=Example
 
 # initialization scripts.
 COPY assets /build/assets
@@ -33,9 +33,7 @@ COPY install /build/install
 RUN /build/install
 
 # Expose service ports.
-EXPOSE 22
-EXPOSE 389
-EXPOSE 636
+EXPOSE 22 389 636
 
 # Set up OpenLDAP database and config directory in data volume.
 VOLUME ["/var/lib/ldap", "/etc/ldap/slapd.d", "/build/assets/private", "/build/assets/certs"]
