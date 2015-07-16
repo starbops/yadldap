@@ -1,0 +1,6 @@
+organization = {{ ORGANIZATION_NAME }}
+cn = {{ HOSTNAME }}
+tls_www_server
+encryption_key
+signing_key
+expiration_days = 3650

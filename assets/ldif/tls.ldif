@@ -1,0 +1,13 @@
+dn: cn=config
+changetype: modify
+replace: olcTLSCACertificateFile
+olcTLSCACertificateFile: /build/assets/tls/cacert.pem
+-
+replace: olcTLSCertificateFile
+olcTLSCertificateFile: /build/assets/tls/ldapcert.pem
+-
+replace: olcTLSCertificateKeyFile
+olcTLSCertificateKeyFile: /build/assets/tls/ldapkey.pem
+-
+replace: olcTLSVerifyClient
+olcTLSVerifyClient: never
