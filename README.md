@@ -87,6 +87,9 @@ $ docker run -d -h <hostname> --name ldap \
     starbops/yadldap:0.1 /sbin/my_init
 ```
 
+It's highly recommended use `-v /etc/localtime:/etc/localtime:ro` to sync the
+time in container with host.
+
 ## Caveat
 
 The hostname of the docker container must be set in order to auto-generate the
