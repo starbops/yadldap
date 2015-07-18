@@ -94,7 +94,8 @@ else
     set_ldapscripts
 
     # OpenLDAP client config
-    echo "TLS_REQCERT never" >> /etc/ldap/ldap.conf
+    grep -qs "^TLS_REQCERT allow" /etc/ldap/ldap.conf || \
+        echo "TLS_REQCERT allow" >> /etc/ldap/ldap.conf
 
 fi
 
@@ -122,7 +123,7 @@ if [ ${BOOTSTRAP} -eq 0 ]; then
     chown -R openldap:openldap /build
 
     # OpenLDAP client config
-    echo "TLS_REQCERT never" >> /etc/ldap/ldap.conf
+    echo "TLS_REQCERT allow" >> /etc/ldap/ldap.conf
 
     # Construct basic directory
     set_ldapscripts
