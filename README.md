@@ -17,16 +17,20 @@ $ tree
 │   │   └── ldapscripts.conf
 │   ├── ldif
 │   │   └── tls.ldif
+│   ├── templates
+│   │   └── ldapscripts.adduser.template
 │   └── tls
 │       ├── ca.info
 │       ├── ldap.info
 │       └── README.md
 ├── Dockerfile
-├── key.pub
 ├── install
-├── kickstart.sh
+├── key.pub
+├── LICENSE
 ├── README.md
-└── slapd.sh
+└── scripts
+    ├── kickstart.sh
+    └── slapd.sh
 ```
 
 Build the Docker image:
