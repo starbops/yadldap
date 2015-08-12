@@ -88,6 +88,7 @@ $ docker run -d -h <hostname> --name ldap \
     -v /docker/ldap/config:/etc/ldap/slapd.d \
     -v /docker/ldap/private:/build/assets/private \
     -v /docker/ldap/certs:/build/assets/certs \
+    -p 636:636
     starbops/yadldap:0.1 /sbin/my_init
 ```
 
